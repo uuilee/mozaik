@@ -38,13 +38,14 @@ class Bus {
     send(subscriptionId, data, type = API_DATA_MESSAGE) {
         if (!this.subscriptions[subscriptionId]) {
             this.logger.warn(chalk.magenta(`No subscription found matching '${subscriptionId}'`))
-
             return
         }
 
-        this.subscriptions[subscriptionId].clients.forEach(clientId => {
+        if (type !== API_ERROR_MESSAGE) {
+          this.subscriptions[subscriptionId].clients.forEach(clientId => {
             this.clients[clientId].emit(type, data)
-        })
+          })
+        }
     }
 
     /**

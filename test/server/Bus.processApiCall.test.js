@@ -59,7 +59,15 @@ test('should cache result', t => {
     const logger = getLogger()
     const bus    = new Bus({ logger })
 
-    bus.subscriptions['test_api.test_method'] = {}
+    const emitSpy = sinon.spy()
+    bus.clients = {
+      'test_client': { emit: emitSpy },
+    }
+    bus.subscriptions = {
+      'test_api.test_method': {
+        clients: ['test_client'],
+      }
+    }
 
     return bus.processApiCall('test_api.test_method', () => 'test').then(() => {
         t.truthy(bus.listSubscriptions()['test_api.test_method'].cached)
